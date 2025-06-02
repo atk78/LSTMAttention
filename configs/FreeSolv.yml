@@ -1,0 +1,38 @@
+bayopt_bounds:
+  lstm_dim: [3, 10]
+  dense_dim: [3, 10]
+  embedding_dim: [3, 10]
+  learning_rate: [1e-4, 1e-2]
+
+# condition for hyperparameter optimization
+bayopt_hparams:
+  bayopt_on: true
+  validation_method: cv
+  cv_n_splits: 3
+  batch_size: 30
+  n_epochs: 20
+  n_trials: 30
+
+# condition for training
+train:
+  augmentation: true
+  batch_size: 30
+  n_epochs: 2000
+  early_stopping_patience: 500
+tf16: true
+seed: 1
+scaling: true
+
+# if bayopt_on is false, these hyperparameters will be used
+ref_hyperparam:
+  lstm_dim: 512,
+  dense_dim: 512,
+  embedding_dim: 512,
+  learning_rate: 1e-3
+
+dataset:
+  filepath: ./../data/processed/FreeSolv.csv
+  output_path: ./../reports/FreeSolv
+  smiles_col_name: smiles
+  prop_col_name: [expt]
+  dataset_ratio: [0.8, 0.1, 0.1]  # [train, valid, test]

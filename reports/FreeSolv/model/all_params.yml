@@ -1,0 +1,89 @@
+bayopt_bounds:
+  dense_dim:
+  - 3
+  - 10
+  embedding_dim:
+  - 3
+  - 10
+  learning_rate:
+  - 1e-4
+  - 1e-2
+  lstm_dim:
+  - 3
+  - 10
+bayopt_hparams:
+  batch_size: 30
+  bayopt_on: true
+  cv_n_splits: 3
+  n_epochs: 20
+  n_trials: 30
+  validation_method: cv
+dataset:
+  dataset_ratio:
+  - 0.8
+  - 0.1
+  - 0.1
+  filepath: ./../data/processed/FreeSolv.csv
+  output_path: ./../reports/FreeSolv
+  prop_col_name:
+  - expt
+  smiles_col_name: smiles
+hyper_parameters:
+  model:
+    dense_dim: 32
+    embedding_dim: 512
+    lstm_dim: 256
+    num_of_outputs: 1
+    vocab_size: 34
+  other:
+    learning_rate: 0.009499968774647321
+ref_hyperparam:
+  dense_dim: 512,
+  embedding_dim: 512,
+  learning_rate: 1e-3
+  lstm_dim: 512,
+scaling: true
+seed: 1
+tf16: true
+token:
+  max_length: 48
+  vocabulary:
+  - pad
+  - unk
+  - n
+  - '4'
+  - c
+  - '3'
+  - '='
+  - '[C@@]'
+  - '1'
+  - '2'
+  - '[N+]'
+  - ' '
+  - (
+  - '[C@@H]'
+  - S
+  - /
+  - C
+  - '[nH]'
+  - O
+  - F
+  - '#'
+  - I
+  - '[C@H]'
+  - N
+  - s
+  - Br
+  - Cl
+  - '[O-]'
+  - '[S+2]'
+  - '5'
+  - '-'
+  - '[C@]'
+  - )
+  - \
+train:
+  augmentation: true
+  batch_size: 30
+  early_stopping_patience: 500
+  n_epochs: 2000
