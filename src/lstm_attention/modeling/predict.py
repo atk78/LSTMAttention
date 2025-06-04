@@ -5,7 +5,7 @@ import torch
 import yaml
 
 from lstm_attention import augm, token
-from lstm_attention.data import Data
+from lstm_attention.dataset import Data
 from lstm_attention.model import LSTMAttention
 
 
@@ -73,7 +73,7 @@ def make_dataset(
     return dataset, enum_card
 
 
-def inference(
+def predict(
     model_dir: str | Path,
     smiles_list: list[str],
     device: str = "cpu",

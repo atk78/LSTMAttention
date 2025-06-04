@@ -12,7 +12,7 @@ from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError, MeanSquar
 from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader
 
-from lstm_attention.data import SmilesDataset
+from lstm_attention.dataset import SmilesDataset
 from lstm_attention.model import LSTMAttention
 
 

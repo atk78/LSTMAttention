@@ -16,9 +16,9 @@ import optuna
 import torch
 
 from lstm_attention.model import LSTMAttention
-from lstm_attention.data import SmilesDataset
-from lstm_attention.trainer import HoldOutTrainer, CrossValidationTrainer, EarlyStopping
-from lstm_attention.evaluate import evaluate_model
+from lstm_attention.dataset import SmilesDataset
+from lstm_attention.modeling.trainer import HoldOutTrainer, CrossValidationTrainer, EarlyStopping
+from lstm_attention.modeling.evaluate import evaluate_model
 from lstm_attention import token, utils
 
 
