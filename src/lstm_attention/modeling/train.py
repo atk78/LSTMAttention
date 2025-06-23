@@ -99,6 +99,7 @@ def bayopt_hparams(
     bayopt_dir.mkdir()
     optuna.logging.enable_propagation()
     # Optunaの学習用関数を内部に作成
+
     def _objective(trial: optuna.trial.Trial):
         lr = trial.suggest_float(
             "learning_rate",
@@ -283,7 +284,7 @@ def training_model(
     return model
 
 
-def copy_model_params(output_dir: Path):
+def copy_model_params(output_dir: Path, model_dir: Path):
     """学習後のモデルパラメータを指定のディレクトリにコピーする関数
 
     Parameters
@@ -291,9 +292,9 @@ def copy_model_params(output_dir: Path):
     output_dir : Path
         学習結果の出力ディレクトリのPathオブジェクト
     """
-    output_dir_name = output_dir.stem
-    parent_dir = output_dir.parent.parent
-    model_dir = parent_dir.joinpath("models").joinpath(output_dir_name)
+    # output_dir_name = output_dir.stem
+    # parent_dir = output_dir.parent.parent
+    # model_dir = parent_dir.joinpath("models").joinpath(output_dir_name)
     if not model_dir.exists():
         model_dir.mkdir()
     shutil.copy(
@@ -337,15 +338,25 @@ def run(config_filepath: str):
     batch_size = config["train"]["batch_size"]
     n_epochs = config["train"]["n_epochs"]
     early_stopping_patience = config["train"]["early_stopping_patience"]
+    polymer_flag = config["polymer_flag"]
     tf16 = config["tf16"]
     seed = config["seed"]
     # scaling = config["train"]["scaling"]
+    max_n_augment = config["max_n_augment"]
+    if max_n_augment == "none":
+        max_n_augment = None
+    elif type(max_n_augment) is not int:
+        raise ValueError(
+            "max_n_augment must be 'none' or int. "
+            f"Got {type(max_n_augment)}."
+        )
 
     # データセットの設定
     dataset_filepath = config["dataset"]["filepath"]
     smiles_col_name = config["dataset"]["smiles_col_name"]
     prop_col_name = config["dataset"]["prop_col_name"]
-    output_dir = config["dataset"]["output_path"]
+    output_dir = Path(config["dataset"]["output_dirpath"])
+    model_dir = Path(config["dataset"]["model_dirpath"])
     dataset_ratio = config["dataset"]["dataset_ratio"]
 
     if type(prop_col_name) is str:
@@ -362,14 +373,13 @@ def run(config_filepath: str):
     # *****************************************
     # 出力ディレクトリの設定
     # *****************************************
-    output_dir = Path(output_dir)
     if output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(exist_ok=True)
     log_dir = output_dir.joinpath("logs")
     log_dir.mkdir()
-    model_dir = output_dir.joinpath("model")
-    model_dir.mkdir()
+    output_model_dir = output_dir.joinpath("model")
+    output_model_dir.mkdir()
 
     logger = utils.log_setup(log_dir, "training", verbose=True)
     logger.info(f"OS: {platform.system()}")
@@ -401,6 +411,8 @@ def run(config_filepath: str):
         smiles=dataset[smiles_col_name].to_numpy(),
         y=dataset[*prop_col_name].to_numpy(),
         augmentation=augmentation,
+        max_n_augment=max_n_augment,
+        polymer_flag=polymer_flag,
         batch_size=batch_size,
         dataset_ratio=dataset_ratio,
         random_state=seed,
@@ -502,7 +514,7 @@ def run(config_filepath: str):
         "max_length": max_length,
         "vocabulary": tokens
     }
-    with open(model_dir.joinpath("all_params.yml"), mode="w") as f:
+    with open(output_model_dir.joinpath("all_params.yml"), mode="w") as f:
         yaml.dump(config, f)
     # *****************************************
     # モデルの本学習
@@ -548,7 +560,7 @@ def run(config_filepath: str):
         batch_size,
         device,
     )
-    copy_model_params(output_dir)
+    copy_model_params(output_dir, model_dir)
 
 
 def main():

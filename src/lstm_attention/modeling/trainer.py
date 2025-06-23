@@ -461,8 +461,8 @@ class HoldOutTrainer(Trainer):
                 self.history["valid_MAE"].append(valid_metrics["MAE"].item())
                 self.history["valid_R2"].append(valid_metrics["R2"].item())
                 progress_bar.set_postfix_str(
-                    f"loss={train_loss:.4f}" +
-                    f"valid_loss={valid_loss:.4f}" +
+                    f"loss={train_loss:.4f} " +
+                    f"valid_loss={valid_loss:.4f} " +
                     f"valid_r2={valid_metrics['R2'].item():.4f}"
                 )
                 if self.early_stopping is not None:

@@ -34,6 +34,8 @@ class SmilesDataset:
         smiles: np.ndarray,
         y: np.ndarray,
         augmentation: bool,
+        max_n_augment: None | int = 10,
+        polymer_flag: bool = False,
         batch_size=1,
         dataset_ratio=[0.8, 0.1, 0.1],
         random_state=42,
@@ -44,6 +46,8 @@ class SmilesDataset:
         self.smiles = smiles
         self.y = y
         self.augmentation = augmentation
+        self.max_n_augment = max_n_augment
+        self.polymer_flag = polymer_flag
         self.batch_size = batch_size
         self.dataset_ratio = dataset_ratio
         self.random_state = random_state
@@ -63,13 +67,13 @@ class SmilesDataset:
             random_state=self.random_state,
         )
         X_train, self.enum_card_train, y_train = augm.data_augmentation(
-            X_train, y_train, self.augmentation
+            X_train, y_train, self.augmentation, self.max_n_augment
         )
         X_valid, self.enum_card_valid, y_valid = augm.data_augmentation(
-            X_valid, y_valid, self.augmentation
+            X_valid, y_valid, self.augmentation, self.max_n_augment
         )
         X_test, self.enum_card_test, y_test = augm.data_augmentation(
-            X_test, y_test, self.augmentation
+            X_test, y_test, self.augmentation, self.max_n_augment
         )
         self.train_dataset = [X_train, y_train]
         self.valid_dataset = [X_valid, y_valid]
@@ -130,7 +134,9 @@ class SmilesDataset:
     def tokenize_smiles(self, datasets: dict[str, list[np.ndarray]]):
         tokenized_smiles_datasets = dict()
         for phase, [smiles, y] in datasets.items():
-            tokenized_smiles_datasets[phase] = [token.get_tokens(smiles), y]
+            tokenized_smiles_datasets[phase] = [
+                token.get_tokens(smiles, poly_flag=self.polymer_flag), y
+            ]
         return tokenized_smiles_datasets
 
     def tensorize_datasets(

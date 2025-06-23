@@ -1,7 +1,11 @@
+import random
+
 from rdkit import Chem
 import numpy as np
 from scipy.ndimage import shift
 
+
+random.seed(42)  # for reproducibility
 
 def rotate_atoms(li: list[int], x: int) -> list[int]:
     """
@@ -32,6 +36,7 @@ def rotate_atoms(li: list[int], x: int) -> list[int]:
 def augmente_smiles(
     smiles: str,
     augmentation: bool = True,
+    max_n_augment: None | int = 10,
     kekule: bool = False
 ) -> list[str]:
     """SMILESを並び変えて1つのSMILESから複数のSMILESを生成（データ拡張）する関数
@@ -114,13 +119,17 @@ def augmente_smiles(
     #     pd.DataFrame(smiles_list).drop_duplicates().iloc[:, 0].values.tolist()
     # )  # duplicates are discarded
     smiles_list = list(set(smiles_list))  # duplicates are discarded
+    if max_n_augment is not None:
+        if len(smiles_list) > max_n_augment:
+            smiles_list = random.sample(smiles_list, max_n_augment)
     return smiles_list
 
 
 def data_augmentation(
     smiles_array: np.ndarray,
     prop_array: np.ndarray,
-    augmentation: bool = True
+    augmentation: bool = True,
+    max_n_augment: None | int = 10
 ) -> tuple[list[str], list[int], list[float]]:
     """SMILESを拡張して、その拡張されたSMILESと対応する物性を返す関数
 
@@ -149,7 +158,7 @@ def data_augmentation(
     prop_enum = list()
     smiles_enum_card = list()
     for idx, i_smiles in enumerate(smiles_array):
-        enumerated_smiles = augmente_smiles(i_smiles, augmentation)
+        enumerated_smiles = augmente_smiles(i_smiles, augmentation, max_n_augment)
         if "None" not in enumerated_smiles:
             smiles_enum_card.append(len(enumerated_smiles))
             smiles_enum.extend(enumerated_smiles)
